@@ -39,9 +39,8 @@ echo -e "${BOLD}${CYAN} 기본 패키지를 설치합니다. 오래 걸리니까
 sudo apt install curl iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli libgbm1 pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip libleveldb-dev libclang-dev llvm-dev -y
 
 echo -e "${BOLD}${CYAN} curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh ${NC}"
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -y
 
-echo -e "${BOLD}${CYAN} sudo sysctl -w vm.overcommit_memory=1 ${NC}"
 source $HOME/.cargo/env
 
 echo -e "${BOLD}${CYAN} sudo sysctl -w vm.overcommit_memory=1 ${NC}"
@@ -71,7 +70,7 @@ echo -e "${BOLD}${CYAN} make install-hoonc ${NC}"
 make install-hoonc
 export PATH="$HOME/.cargo/bin:$PATH"
 
-echo -e "${BOLD}${CYAN} 지갑을 생성하기 위한 준비를 해 보아요 ㅎㅎ ${NC}"
+echo -e "${BOLD}${CYAN} 지갑을 생성하기 위한 준비를 해 보아요 ㅎㅎ 오래 걸리니까 기다려 보아용 ${NC}"
 make build
 
 # 지갑을 생성해 보아요
@@ -91,19 +90,45 @@ source ~/.bashrc
 make_nock_wallet() {
 
 #디렉토리 이동
-cd nockchain
+cd ~/nockchain
 
 echo -e "${BOLD}${YELLOW} 한 번 변경사항 저장하고 갈게요~ ${NC}"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 echo -e "${BOLD}${RED} 이제 진짜로 지갑 만들 거에요~ 메모장 꺼내애앳!! ${NC}"
 nockchain-wallet keygen
-source ~/.bashrc
 
 echo -ne "${BOLD}${MAGENTA} 아까 생성한 지갑 프라이빗키 여따가 치세염: ${NC}"
 read -e private_key
+
+echo -e "${BOLD}${YELLOW} 입력된 프라이빗키: ${private_key} ${NC}"
+
+echo -e "${BOLD}${YELLOW} 프라이빗키 교체해 드릴게요~ ${NC}"
+# .env 경로
+env="$HOME/nockchain/.env"
+
+# sed로 MINING_PUBKEY 값 바꾸기
+sed -i "s|^MINING_PUBKEY=.*|MINING_PUBKEY=$private_key|" "$env"
+
+echo -e "${BOLD}${CYAN} 프라이빗키 교체 완료~ ${NC}"
+source ~/.bashrc
 }
 
+run_a_node() {
+# .env 경로
+env="$HOME/nockchain/.env"
+
+# .env 파일에서 변수 뽑기
+echo -e "${BOLD}${CYAN} 변수를 뽑는 중이에용... ${NC}"
+source "$env"
+export RUST_LOG
+export MINIMAL_LOG_FORMAT
+export MINING_PUBKEY
+
+# 마이닝 실행
+echo -e "${BOLD}${CYAN} 마이닝 시작하겠습니당 ${NC}"
+nockchain --mining-pubkey "${MINING_PUBKEY}" --mine
+}
 # 메인 메뉴
 echo && echo -e "${BOLD}${MAGENTA} NOCK CHAIN 자동 설치 스크립트${NC} by 코인러브미순
  ${CYAN}원하는 번호 입력하삼 ${NC}
