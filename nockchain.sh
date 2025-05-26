@@ -127,15 +127,29 @@ export MINING_PUBKEY
 
 # 마이닝 실행
 echo -e "${BOLD}${CYAN} 마이닝 시작하겠습니당 ${NC}"
-nockchain --mining-pubkey "${MINING_PUBKEY}" --mine
+nockchain --mining-pubkey "${MINING_PUBKEY}" --mine --npc-socket .socket/nockchain_npc.sock
 }
+
+fixed_error() {
+
+echo -e "${BOLD}${RED} 스크린 좀 끌게염 ${NC}"
+screen -X -S miner kill
+
+echo -e "${BOLD}${CYAN} 관련된 것들 좀 지울게욤 ${NC}"
+rm -rf ~/nockchain/.data.nockchain .socket/nockchain_npc.sock
+
+echo -e "${BOLD}${CYAN} 이제 다시 screen -S miner 한 다음에 이 스크립트 재실행해서 3번 실행하셈.(수정 전에 한 사람은 안 해두 됨) ${NC}"
+echo -e "${BOLD}${CYAN} nockchain-wallet --nockchain-socket .socket/nockchain_npc.sock list-notes <<이게 잔액 확인하는 명령어임 ${NC}"
+}
+
 # 메인 메뉴
 echo && echo -e "${BOLD}${MAGENTA} NOCK CHAIN 자동 설치 스크립트${NC} by 코인러브미순
  ${CYAN}원하는 번호 입력하삼 ${NC}
  ———————————————————————
- ${GREEN} 1. 기본파일 설치 및 Nockchain 설치 1번(v1.4.0) ${NC}
+ ${GREEN} 1. 기본파일 설치 및 Nockchain 설치 ${NC}
  ${GREEN} 2. Nockchain 지갑 만들고 설정사항 바꿔보아요 ${NC}
- ${GREEN} 3. Nockchain을 실행해 보아요~ ${NC}
+ ${GREEN} 3. Nockchain을 실행해 보아요~(수정 완료) ${NC}
+ ${GREEN} 4. 오류를 고쳐보아요 ${NC}
  ———————————————————————" && echo
 
 # 사용자 입력 대기
@@ -151,6 +165,9 @@ case "$num" in
     ;;
 3)
     run_a_node
+    ;;
+4)
+    fixed_error
     ;;
 *)
     echo -e "${BOLD}${RED} 비욘세의 Cowboy Carter 스트리밍하고 오세요. ${NC}"
