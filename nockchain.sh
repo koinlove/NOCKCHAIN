@@ -98,19 +98,19 @@ export PATH="$HOME/.cargo/bin:$PATH"
 echo -e "${BOLD}${RED} 이제 진짜로 지갑 만들 거에요~ 메모장 꺼내애앳!! ${NC}"
 nockchain-wallet keygen
 
-echo -ne "${BOLD}${MAGENTA} 아까 생성한 지갑 프라이빗키 여따가 치세염: ${NC}"
-read -e private_key
+echo -ne "${BOLD}${MAGENTA} 아까 생성한 지갑 퍼블릭키(주소) 여따가 치세염: ${NC}"
+read -e public_key
 
-echo -e "${BOLD}${YELLOW} 입력된 프라이빗키: ${private_key} ${NC}"
+echo -e "${BOLD}${YELLOW} 입력된 퍼블릭키: ${public_key} ${NC}"
 
-echo -e "${BOLD}${YELLOW} 프라이빗키 교체해 드릴게요~ ${NC}"
+echo -e "${BOLD}${YELLOW} 퍼블릭키 교체해 드릴게요~ ${NC}"
 # .env 경로
 env="$HOME/nockchain/.env"
 
 # sed로 MINING_PUBKEY 값 바꾸기
-sed -i "s|^MINING_PUBKEY=.*|MINING_PUBKEY=$private_key|" "$env"
+sed -i "s|^MINING_PUBKEY=.*|MINING_PUBKEY=$public_key|" "$env"
 
-echo -e "${BOLD}${CYAN} 프라이빗키 교체 완료~ ${NC}"
+echo -e "${BOLD}${CYAN} 퍼블릭키 교체 완료~ ${NC}"
 source ~/.bashrc
 }
 
